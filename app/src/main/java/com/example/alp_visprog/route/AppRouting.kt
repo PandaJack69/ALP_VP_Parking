@@ -15,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.alp_visprog.view.LoginView
 import com.example.alp_visprog.view.HomeScreen
 import com.example.alp_visprog.view.QrScanner
 import com.example.alp_visprog.view.QrGenerator
@@ -64,6 +65,7 @@ import com.example.alp_visprog.view.QrGenerator
 //}
 
 sealed class Screen(val route: String) {
+    object Login : Screen("login")
     object Home : Screen("home")
     object QRScanner : Screen("qr_scanner")
     object QRGenerator : Screen("qr_generator")
