@@ -1,4 +1,4 @@
-package com.example.alp_visprog.view
+package com.example.alp_vp.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,13 +16,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,8 +60,7 @@ fun Reservation(){
         ) {
             IconButton(onClick = { /* Handle back navigation */ }) {
                 Icon(
-                    Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-//                    Icons.Filled.KeyboardArrowLeft,
+                    Icons.Filled.KeyboardArrowLeft,
                     contentDescription = "Back",
                     modifier = Modifier.size(35.dp),
                     tint = Color(0xFFFFA000)
@@ -246,7 +246,7 @@ fun Reservation(){
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview (showBackground = true, showSystemUi = true)
 @Composable
 fun ReservationView(){
     Reservation()
