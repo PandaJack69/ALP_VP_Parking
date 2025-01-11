@@ -1,17 +1,17 @@
 package com.example.alp_visprog
 
-import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.dataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
 import com.example.alp_visprog.repository.AuthenticationRepository
 import com.example.alp_visprog.repository.NetworkAuthenticationRepository
+import com.example.alp_visprog.repository.NetworkPenaltyRepository
 //import com.example.alp_visprog.repository.NetworkTodoRepository
 import com.example.alp_visprog.repository.NetworkUserRepository
+import com.example.alp_visprog.repository.PenaltyRepository
 //import com.example.alp_visprog.repository.TodoRepository
 import com.example.alp_visprog.repository.UserRepository
 import com.example.alp_visprog.service.AuthenticationAPIService
+import com.example.alp_visprog.service.PenaltyAPIService
 //import com.example.alp_visprog.service.TodoAPIService
 import com.example.alp_visprog.service.UserAPIService
 import okhttp3.OkHttpClient
@@ -25,6 +25,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 interface AppContainer {
     val authenticationRepository: AuthenticationRepository
     val userRepository: UserRepository
+    val penaltyRepository: PenaltyRepository
 //    val todoRepository: TodoRepository
 }
 
@@ -48,11 +49,11 @@ class DefaultAppContainer(
         retrofit.create(UserAPIService::class.java)
     }
 
-//    private val todoRetrofitService: TodoAPIService by lazy {
-//        val retrofit = initRetrofit()
-//
-//        retrofit.create(TodoAPIService::class.java)
-//    }
+    private val penaltyRetrofitService: PenaltyAPIService by lazy {
+        val retrofit = initRetrofit()
+
+        retrofit.create(PenaltyAPIService::class.java)
+    }
 
     // REPOSITORY INIT
     // Passing in the required objects is called dependency injection (DI). It is also known as inversion of control.
@@ -64,9 +65,9 @@ class DefaultAppContainer(
         NetworkUserRepository(userDataStore, userRetrofitService)
     }
 
-//    override val todoRepository: TodoRepository by lazy {
-//        NetworkTodoRepository(todoRetrofitService)
-//    }
+    override val penaltyRepository: PenaltyRepository by lazy {
+        NetworkPenaltyRepository(penaltyRetrofitService)
+    }
 
     private fun initRetrofit(): Retrofit {
         val logging = HttpLoggingInterceptor()

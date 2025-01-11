@@ -4,6 +4,8 @@ enum class PagesEnum() {
     Login,
     Register,
     Home,
+    Penalty,
+    PenaltyCard,
 //    CreateTodo,
 //    TodoDetail
 }

@@ -1,5 +1,6 @@
 package com.example.alp_visprog.route
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -11,6 +12,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -24,7 +26,12 @@ import com.example.alp_visprog.view.RegisterView
 import com.example.alp_visprog.view.HomeScreen
 import com.example.alp_visprog.view.QrScanner
 import com.example.alp_visprog.view.QrGenerator
+import com.example.alp_visprog.view.PenaltyView
+import com.example.alp_visprog.view.PenaltyCard
+
 import com.example.alp_visprog.enum.PagesEnum
+import com.example.alp_visprog.model.PenaltyModelItem
+import com.example.alp_visprog.view.PenaltyCard
 import com.example.alp_visprog.viewModel.AuthenticationViewModel
 import com.example.alp_visprog.viewModel.HomeViewModel
 
@@ -75,6 +82,31 @@ fun AppRouting(
                 context = localContext
             )
         }
+
+        composable (route = PagesEnum.Penalty.name) {
+            PenaltyView(
+
+            )
+        }
+
+        composable (route = PagesEnum.PenaltyCard.name) {
+            PenaltyCard(penalty = PenaltyModelItem()) {
+
+            }
+        }
+
+//        composable(route = PagesEnum.Home.name) {
+//            HomeView(
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .background(Color.White),
+//                homeViewModel = homeViewModel,
+//                navController = navController,
+//                token = token.value,
+//                todoDetailViewModel = todoDetailViewModel,
+//                context = localContext
+//            )
+//        }
 
     }
 //    Scaffold(
