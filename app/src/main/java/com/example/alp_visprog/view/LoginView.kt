@@ -1,5 +1,6 @@
 package com.example.alp_visprog.view
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,17 +28,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.alp_visprog.R
+import com.example.alp_visprog.enum.PagesEnum
+import com.example.alp_visprog.viewModel.AuthenticationViewModel
+import com.example.alp_visprog.ui.theme.ALP_VisProgTheme
 
 @Composable
-fun LoginView(navController: NavController) {
+fun LoginView(
+//    onLoginSuccess: () -> Unit
+    authenticationViewModel: AuthenticationViewModel,
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    context: Context
+) {
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.bg_gedung_uc),
@@ -103,9 +116,12 @@ fun LoginView(navController: NavController) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Button(
-                        onClick = { /* Handle Log In */ },
+                        onClick = {
+                            // Simulate login success or implement authentication logic
+//                            onLoginSuccess()
+                        },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA155)) // Keep original button color
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA155))
                     ) {
                         Text(
                             text = "Log In",
@@ -128,9 +144,18 @@ fun LoginView(navController: NavController) {
                             fontSize = 12.sp,
                             color = Color(0xFFFF7637),
                             modifier = Modifier.clickable {
-                                navController.navigate("SignUp")
+//                                navController.navigate("SignUp")
+                                navController.navigate(PagesEnum.Register.name)
                             }
                         )
+//                        onActionTextClicked = {
+//                            authenticationViewModel.resetViewModel()
+//                            navController.navigate(PagesEnum.Register.name) {
+//                                popUpTo(PagesEnum.Login.name) {
+//                                    inclusive = true
+//                                }
+//                            }
+//                        },
                     }
                 }
             }
@@ -144,7 +169,26 @@ fun LoginView(navController: NavController) {
 )
 @Composable
 fun LoginViewPreview() {
-    LoginView(
-        navController = rememberNavController()
-    )
+    ALP_VisProgTheme {
+        LoginView(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(20.dp),
+            authenticationViewModel = viewModel(),
+            navController = rememberNavController(),
+            context = LocalContext.current
+        )
+    }
 }
+
+//@Preview(
+//    showSystemUi = true,
+//    showBackground = true
+//)
+//@Composable
+//fun LoginViewPreview() {
+//    LoginView(
+//        navController = rememberNavController(),
+//        onLoginSuccess = {}
+//    )
+//}

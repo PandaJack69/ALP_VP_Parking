@@ -1,5 +1,6 @@
 package com.example.alp_visprog.view
 
+import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -36,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -43,12 +45,21 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.alp_visprog.R
+import com.example.alp_visprog.viewModel.AuthenticationViewModel
+import com.example.alp_visprog.ui.theme.ALP_VisProgTheme
 
 @Composable
-fun SignUpView(navController: NavController) {
+fun RegisterView(
+    authenticationViewModel: AuthenticationViewModel,
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    context: Context
+) {
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.bg_gedung_uc),
@@ -276,8 +287,26 @@ fun CustomUploadField(
     showBackground = true
 )
 @Composable
-fun SignUpViewPreview() {
-    SignUpView(
-        navController = rememberNavController()
-    )
+fun RegisterViewPreview() {
+    ALP_VisProgTheme {
+        RegisterView(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(20.dp),
+            authenticationViewModel = viewModel(factory = AuthenticationViewModel.Factory),
+            navController = rememberNavController(),
+            context = LocalContext.current
+        )
+    }
+
+//    AppTheme {
+//        RegisterView(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .padding(20.dp),
+//            authenticationViewModel = viewModel(factory = AuthenticationViewModel.Factory),
+//            navController = rememberNavController(),
+//            context = LocalContext.current
+//        )
+//    }
 }

@@ -14,7 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.alp_visprog.route.Screen
+//import com.example.alp_visprog.route.Screen
 
 @Composable
 fun HomeScreen(navController: NavController) {
@@ -25,16 +25,16 @@ fun HomeScreen(navController: NavController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(
-            onClick = { navController.navigate(Screen.QRScanner.route) },
-            modifier = Modifier.padding(bottom = 16.dp)
-        ) {
-            Text(text = "Open QR Scanner")
-        }
-
-        Button(onClick = { navController.navigate(Screen.QRGenerator.route) }) {
-            Text(text = "Open QR Generator")
-        }
+//        Button(
+//            onClick = { navController.navigate(Screen.QRScanner.route) },
+//            modifier = Modifier.padding(bottom = 16.dp)
+//        ) {
+//            Text(text = "Open QR Scanner")
+//        }
+//
+//        Button(onClick = { navController.navigate(Screen.QRGenerator.route) }) {
+//            Text(text = "Open QR Generator")
+//        }
     }
 }
 

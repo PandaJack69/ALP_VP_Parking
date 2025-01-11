@@ -15,15 +15,15 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
 import com.example.alp_visprog.R
-import com.example.alp_visprog.TodoListApplication
-import com.example.alp_visprog.enums.PagesEnum
+import com.example.alp_visprog.ParkingApplication
+import com.example.alp_visprog.enum.PagesEnum
 import com.example.alp_visprog.model.ErrorModel
 import com.example.alp_visprog.model.UserResponse
 import com.example.alp_visprog.repository.AuthenticationRepository
 import com.example.alp_visprog.repository.NetworkUserRepository
 import com.example.alp_visprog.repository.UserRepository
-import com.example.alp_visprog.uiStates.AuthenticationStatusUIState
-import com.example.alp_visprog.uiStates.AuthenticationUIState
+import com.example.alp_visprog.uiState.AuthenticationStatusUIState
+import com.example.alp_visprog.uiState.AuthenticationUIState
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -256,7 +256,7 @@ class AuthenticationViewModel(
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                val application = (this[APPLICATION_KEY] as TodoListApplication)
+                val application = (this[APPLICATION_KEY] as ParkingApplication)
                 val authenticationRepository = application.container.authenticationRepository
                 val userRepository = application.container.userRepository
                 AuthenticationViewModel(authenticationRepository, userRepository)
