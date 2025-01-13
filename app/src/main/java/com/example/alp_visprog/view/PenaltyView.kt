@@ -2,6 +2,7 @@ package com.example.alp_visprog.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -35,6 +36,21 @@ fun PenaltyView(
     viewModel: PenaltyViewModel = viewModel(),
     modifier: Modifier = Modifier
 ) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Icon(
+            painter = painterResource(id = R.drawable.baseline_arrow_back_ios_new_24),
+            contentDescription = null,
+            tint = Color(0xFFFFA155),
+            modifier = Modifier
+                .size(24.dp)
+                .clickable {
+                    if (navController != null) {
+                        navController.popBackStack()
+                    }
+                }
+        )
+    }
+    Spacer(modifier = Modifier.height(15.dp))
     val penalties by viewModel.penalties.collectAsState()
     Column(
         modifier = modifier
@@ -42,7 +58,7 @@ fun PenaltyView(
             .padding(16.dp)
     ) {
         Text(
-            text = "Restaurant List",
+            text = "Penalty List",
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold
         )

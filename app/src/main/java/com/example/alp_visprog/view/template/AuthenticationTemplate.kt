@@ -64,6 +64,45 @@ fun AuthenticationOutlinedTextField(
 }
 
 @Composable
+fun AuthenticationOutlinedNumberField(
+    inputValue: String,
+    onInputValueChange: (String) -> Unit,
+    labelText: String,
+    placeholderText: String,
+    leadingIconSrc: Painter,
+    modifier: Modifier = Modifier,
+    onKeyboardNext: KeyboardActions
+) {
+    OutlinedTextField(
+        value = inputValue,
+        onValueChange = onInputValueChange,
+        singleLine = true,
+        label = {
+            Text(
+                text = labelText
+            )
+        },
+        placeholder = {
+            Text(
+                text = placeholderText
+            )
+        },
+        modifier = modifier,
+        shape = RoundedCornerShape(size = 15.dp),
+        leadingIcon = {
+            Image(
+                painter = leadingIconSrc,
+                contentDescription = null
+            )
+        },
+        keyboardOptions = KeyboardOptions.Default.copy(
+            keyboardType = KeyboardType.Number // Set keyboard type to Number
+        ),
+        keyboardActions = onKeyboardNext
+    )
+}
+
+@Composable
 fun PasswordOutlinedTextField(
     passwordInput: String,
     onPasswordInputValueChange: (String) -> Unit,
@@ -131,7 +170,7 @@ fun AuthenticationButton(
     when(userDataStatusUIState) {
         is AuthenticationStatusUIState.Loading -> CircleLoadingTemplate(
             modifier = loadingBarModifier,
-            color = Color.Blue,
+            color = Color(0xFFFFA155),
             trackColor = Color.Transparent
         )
         else -> Button(
@@ -142,6 +181,7 @@ fun AuthenticationButton(
         ) {
             Text(
                 text = buttonText,
+                color = Color.Black,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
                 modifier = textModifier

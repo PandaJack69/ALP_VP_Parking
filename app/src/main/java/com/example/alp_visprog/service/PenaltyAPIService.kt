@@ -18,20 +18,34 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface PenaltyAPIService {
-    @GET("api/penalty")
-    fun getAllPenalty(@Header("X-API-TOKEN") token: String): Call<PenaltyModel>
 
-    @GET("api/penalty/{id}")
-    fun getPenalty(@Header("X-API-TOKEN") token: String, @Path("id") penaltyId: Int): Call<PenaltyModelItem>
+    @GET("penalties")
+    suspend fun getAllPenalty(
+        @Header("Authorization") token: String
+    ): PenaltyModel
 
-    @POST("api/penalty")
-    fun createPenalty(@Body penaltyModel: PenaltyModelItem): Call<PenaltyModelItem>
-
-    @PUT("api/penalty/{id}")
-    fun updatePenalty(@Header("X-API-TOKEN") token: String, @Path("id") penaltyId: Int, @Body penaltyModel: PenaltyModelItem): Call<PenaltyModelItem>
-
-    @DELETE("api/penalty/{id}")
-    fun deletePenalty(@Header("X-API-TOKEN") token: String, @Path("id") penaltyId: Int): Call<Void>
-
-
+    @GET("penalties/{penaltyId}")
+    suspend fun getPenalty(
+        @Header("Authorization") token: String,
+        @Path("penaltyId") penaltyId: Int
+    ): PenaltyModelItem
 }
+
+//interface PenaltyAPIService {
+//    @GET("api/penalty")
+//    fun getAllPenalty(@Header("X-API-TOKEN") token: String): Call<PenaltyModel>
+//
+//    @GET("api/penalty/{id}")
+//    fun getPenalty(@Header("X-API-TOKEN") token: String, @Path("id") penaltyId: Int): Call<PenaltyModelItem>
+//
+//    @POST("api/penalty")
+//    fun createPenalty(@Body penaltyModel: PenaltyModelItem): Call<PenaltyModelItem>
+//
+//    @PUT("api/penalty/{id}")
+//    fun updatePenalty(@Header("X-API-TOKEN") token: String, @Path("id") penaltyId: Int, @Body penaltyModel: PenaltyModelItem): Call<PenaltyModelItem>
+//
+//    @DELETE("api/penalty/{id}")
+//    fun deletePenalty(@Header("X-API-TOKEN") token: String, @Path("id") penaltyId: Int): Call<Void>
+//
+//
+//}

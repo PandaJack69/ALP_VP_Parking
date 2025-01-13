@@ -7,7 +7,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -17,18 +16,16 @@ import com.example.alp_visprog.enum.PagesEnum
 import com.example.alp_visprog.enum.PrioritiesEnum
 import com.example.alp_visprog.model.ErrorModel
 import com.example.alp_visprog.model.GeneralResponseModel
-//import com.example.alp_visprog.model.GetAllTodoResponse
-//import com.example.alp_visprog.repository.TodoRepository
+import com.example.alp_visprog.model.ReservationModel
+import com.example.alp_visprog.model.ParkingLotModel
 import com.example.alp_visprog.repository.UserRepository
 import com.example.alp_visprog.uiState.AuthenticationUIState
 import com.example.alp_visprog.uiState.HomeUIState
 import com.example.alp_visprog.uiState.StringDataStatusUIState
-//import com.example.alp_visprog.uiState.TodoDataStatusUIState
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -36,18 +33,82 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.IOException
+import java.util.Date
 
 class HomeViewModel(
     private val userRepository: UserRepository,
-//    private val todoRepository: TodoRepository
-): ViewModel() {
+) : ViewModel() {
     private val _homeUIState = MutableStateFlow(HomeUIState())
+
+    private val _reservationState = MutableStateFlow(ReservationState())
+    val reservationState: StateFlow<ReservationState> = _reservationState
+
+    val userId: StateFlow<String> = userRepository.currentUserId.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = "Unknown"
+    )
+
+//    val userId: String = userRepository.getUserId() // Fetch the user ID from the repository
+
+//    init {
+//        fetchActiveReservation(userId)
+//    }
+
+    init {
+        // Observe userId and fetch reservation when it changes
+        viewModelScope.launch {
+            userRepository.currentUserId.collect { userId ->
+                if (userId != "Unknown") {
+                    fetchActiveReservation(userId)
+                }
+            }
+        }
+    }
+
+    private fun fetchActiveReservation(userId: String) {
+        viewModelScope.launch {
+            try {
+                val activeReservationCall = userRepository.getActiveReservation(userId)
+                activeReservationCall.enqueue(object : Callback<ReservationModel> {
+                    override fun onResponse(
+                        call: Call<ReservationModel>,
+                        response: Response<ReservationModel>
+                    ) {
+                        if (response.isSuccessful) {
+                            val activeReservation = response.body()
+                            if (activeReservation?.reservationStatus == "active") {
+                                _reservationState.value = ReservationState(
+                                    hasActiveReservation = true,
+                                    activeReservation = activeReservation
+                                )
+                            } else {
+                                _reservationState.value = ReservationState(
+                                    hasActiveReservation = false
+                                )
+                            }
+                        } else {
+                            Log.e("Reservation", "Failed to fetch reservation: ${response.errorBody()}")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<ReservationModel>, t: Throwable) {
+                        Log.e("Reservation", "Error fetching reservation: ${t.localizedMessage}")
+                    }
+                })
+            } catch (e: IOException) {
+                Log.e("Reservation", "IOException: ${e.localizedMessage}")
+            }
+        }
+    }
+
+    data class ReservationState(
+        val hasActiveReservation: Boolean = false,
+        val activeReservation: ReservationModel? = null
+    )
 
     var logoutStatus: StringDataStatusUIState by mutableStateOf(StringDataStatusUIState.Start)
         private set
-
-//    var dataStatus: TodoDataStatusUIState by mutableStateOf(TodoDataStatusUIState.Start)
-//        private set
 
     val username: StateFlow<String> = userRepository.currentUsername.stateIn(
         scope = viewModelScope,
@@ -63,124 +124,51 @@ class HomeViewModel(
 
     fun clearDialog() {
         _homeUIState.update { state ->
-            state.copy(
-                showDialog = false
-            )
+            state.copy(showDialog = false)
         }
     }
 
     fun changePriorityTextBackgroundColor(
         priority: PrioritiesEnum
     ): Color {
-        if (priority == PrioritiesEnum.High) {
-            return Color.Red
-        } else if (priority == PrioritiesEnum.Medium) {
-            return Color.Yellow
+        return when (priority) {
+            PrioritiesEnum.High -> Color.Red
+            PrioritiesEnum.Medium -> Color.Yellow
+            else -> Color.Green
         }
-
-        return Color.Green
     }
 
     fun logoutUser(token: String, navController: NavHostController) {
         viewModelScope.launch {
             logoutStatus = StringDataStatusUIState.Loading
-
-            Log.d("token-logout", "LOGOUT TOKEN: ${token}")
-
             try {
                 val call = userRepository.logout(token)
-
-                call.enqueue(object: Callback<GeneralResponseModel>{
+                call.enqueue(object : Callback<GeneralResponseModel> {
                     override fun onResponse(call: Call<GeneralResponseModel>, res: Response<GeneralResponseModel>) {
                         if (res.isSuccessful) {
                             logoutStatus = StringDataStatusUIState.Success(data = res.body()!!.data)
-
                             saveUsernameToken("Unknown", "Unknown")
-
                             navController.navigate(PagesEnum.Login.name) {
-                                popUpTo(PagesEnum.Home.name) {
-                                    inclusive = true
-                                }
+                                popUpTo(PagesEnum.Home.name) { inclusive = true }
                             }
                         } else {
                             val errorMessage = Gson().fromJson(
                                 res.errorBody()!!.charStream(),
                                 ErrorModel::class.java
                             )
-
                             logoutStatus = StringDataStatusUIState.Failed(errorMessage.errors)
-                            // set error message toast
                         }
                     }
 
                     override fun onFailure(call: Call<GeneralResponseModel>, t: Throwable) {
                         logoutStatus = StringDataStatusUIState.Failed(t.localizedMessage)
-                        Log.d("logout-failure", t.localizedMessage)
+                        Log.e("logout-failure", t.localizedMessage)
                     }
                 })
             } catch (error: IOException) {
                 logoutStatus = StringDataStatusUIState.Failed(error.localizedMessage)
-                Log.d("logout-error", error.localizedMessage)
+                Log.e("logout-error", error.localizedMessage)
             }
-        }
-    }
-
-//    fun getAllTodos(token: String) {
-//        viewModelScope.launch {
-//            Log.d("token-home", "TOKEN AT HOME: ${token}")
-//
-//            dataStatus = TodoDataStatusUIState.Loading
-//
-//            try {
-//                val call = todoRepository.getAllTodos(token)
-//                call.enqueue(object : Callback<GetAllTodoResponse> {
-//                    override fun onResponse(call: Call<GetAllTodoResponse>, res: Response<GetAllTodoResponse>) {
-//                        if (res.isSuccessful) {
-//                            dataStatus = TodoDataStatusUIState.Success(res.body()!!.data)
-//
-//                            Log.d("data-result", "TODO LIST DATA: ${dataStatus}")
-//                        } else {
-//                            val errorMessage = Gson().fromJson(
-//                                res.errorBody()!!.charStream(),
-//                                ErrorModel::class.java
-//                            )
-//
-//                            dataStatus = TodoDataStatusUIState.Failed(errorMessage.errors)
-//                        }
-//                    }
-//
-//                    override fun onFailure(call: Call<GetAllTodoResponse>, t: Throwable) {
-//                        dataStatus = TodoDataStatusUIState.Failed(t.localizedMessage)
-//                    }
-//
-//                })
-//            } catch (error: IOException) {
-//                dataStatus = TodoDataStatusUIState.Failed(error.localizedMessage)
-//            }
-//        }
-//    }
-
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[APPLICATION_KEY] as ParkingApplication)
-                val userRepository = application.container.userRepository
-//                val todoRepository = application.container.todoRepository
-                HomeViewModel(
-                    userRepository,
-//                    todoRepository
-                )
-            }
-        }
-    }
-
-    fun convertStringToEnum(text: String): PrioritiesEnum {
-        if (text == "High") {
-            return PrioritiesEnum.High
-        } else if (text == "Medium") {
-            return PrioritiesEnum.Medium
-        } else {
-            return PrioritiesEnum.Low
         }
     }
 
@@ -191,11 +179,17 @@ class HomeViewModel(
         }
     }
 
-    fun clearLogoutErrorMessage() {
-        logoutStatus = StringDataStatusUIState.Start
+    companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application = this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]
+                    ?: throw IllegalStateException("Application is null in ViewModel Factory")
+                if (application !is ParkingApplication) {
+                    throw IllegalStateException("Expected application of type ParkingApplication, but got ${application.javaClass.name}")
+                }
+                val userRepository = application.container.userRepository
+                HomeViewModel(userRepository)
+            }
+        }
     }
-
-//    fun clearDataErrorMessage() {
-//        dataStatus = TodoDataStatusUIState.Start
-//    }
 }
